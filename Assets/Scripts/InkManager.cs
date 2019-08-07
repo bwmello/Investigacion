@@ -8,6 +8,27 @@ using Ink.Runtime;
 
 public class InkManager : MonoBehaviour
 {
+    [SerializeField]
+    private TextAsset inkJSONAsset;
+    private Story story;
+
+    [SerializeField]
+    private Canvas canvas;
+
+    public enum TagKeyWords { CHARACTER, LOCATION };
+
+    // UI Prefabs
+    [SerializeField]
+    private Text textPrefab;
+    //[SerializeField]
+    //private Button buttonPrefab;
+    [SerializeField]
+    private GameObject wordBubblePrefab;
+    CharacterManager cm;
+    GameManager gm;
+    [SerializeField]
+    BackgroundManager bm;
+
     void Start()
     {
         cm = GetComponent<CharacterManager>();
@@ -20,18 +41,6 @@ public class InkManager : MonoBehaviour
     void StartStory()
     {
         story = new Story(inkJSONAsset.text);
-        story.BindExternalFunction("place_actors", (string leftName, string rightName) =>
-        {
-            cm.PlaceActors(leftName, rightName);
-        });
-        story.BindExternalFunction("set_actor_disposition", (string newDisposition, int ID) =>
-        {
-            cm.SetActorDisposition(newDisposition, ID);
-        });
-        story.BindExternalFunction("shift_actor_disposition", (int emotion, int ID) =>
-        {
-            cm.ShiftActorDisposition(emotion, ID);
-        });
         RefreshView();
     }
 
@@ -42,6 +51,9 @@ public class InkManager : MonoBehaviour
     {
         // Remove all the UI on screen
         RemoveChildren();
+
+        // Remove all characters on screen
+        cm.RemoveCharacters();
 
         // Read all the content until we can't continue any more
         while (story.canContinue)
@@ -61,20 +73,22 @@ public class InkManager : MonoBehaviour
             for (int i = 0; i < story.currentChoices.Count; i++)
             {
                 Choice choice = story.currentChoices[i];
-                Button button = CreateChoiceView(choice.text.Trim());
+                //Button button = CreateChoiceView(choice.text.Trim());
+                GameObject wordBubble = CreateChoiceView(choice.text.Trim());
                 // Tell the button what to do when we press it
-                button.onClick.AddListener(delegate {
-                    OnClickChoiceButton(choice);
-                });
+                //button.onClick.AddListener(delegate {  // TODO
+                //    OnClickChoiceButton(choice);
+                //});
             }
         }
         // If we've read all the content and there's no choices, the story is finished!
         else
         {
-            Button choice = CreateChoiceView("End of story.\nRestart?");
-            choice.onClick.AddListener(delegate {
-                StartStory();
-            });
+            //Button choice = CreateChoiceView("End of story.\nRestart?");
+            GameObject choice = CreateChoiceView("End of story.\nRestart?");
+            //choice.onClick.AddListener(delegate {  // TODO
+            //    StartStory();
+            //});
         }
     }
 
@@ -94,10 +108,12 @@ public class InkManager : MonoBehaviour
     }
 
     // Creates a button showing the choice text
-    Button CreateChoiceView(string text)
+    //Button CreateChoiceView(string text)
+    GameObject CreateChoiceView(string text)
     {
         // Creates the button from a prefab
-        Button choice = Instantiate(buttonPrefab) as Button;
+        //Button choice = Instantiate(buttonPrefab) as Button;
+        GameObject choice = Instantiate(wordBubblePrefab);
         choice.transform.SetParent(canvas.transform, false);
 
         // Gets the text from the button prefab
@@ -143,23 +159,4 @@ public class InkManager : MonoBehaviour
             }
         }
     }
-
-    [SerializeField]
-    private TextAsset inkJSONAsset;
-    private Story story;
-
-    [SerializeField]
-    private Canvas canvas;
-
-    public enum TagKeyWords { CHARACTER, LOCATION };
-
-    // UI Prefabs
-    [SerializeField]
-    private Text textPrefab;
-    [SerializeField]
-    private Button buttonPrefab;
-    CharacterManager cm;
-    GameManager gm;
-    [SerializeField]
-    BackgroundManager bm;
 }

@@ -5,9 +5,6 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public enum TagKeyWords { LOCATION };
-
-
     void Awake()
     {
         

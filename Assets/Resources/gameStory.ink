@@ -1,12 +1,3 @@
-EXTERNAL change_scene(scene_name)
-EXTERNAL place_actors(left_actor_name, right_actor_name)
-EXTERNAL set_actor_disposition(newDisposition, ID) //ID: Left=0, Right=1
-EXTERNAL shift_actor_disposition(newDisposition, ID) //ID: Left=0, Right=1
-{place_actors("Actor", "Actor 1")}
-{set_actor_disposition("hostile", 0)}
-{set_actor_disposition("friendly", 1)}
-{shift_actor_disposition(-1, 1)}
-
 // {LIST has VAR} only if LIST = (VAR) or until LIST += VAR
 LIST unlockedLocations = employeesOnlyArea, storageRoom, mummyMuseumCuratorHome, janitorHome, familyHome, highSchool, regionalMuseum
 LIST suspects = (securityGuard), mummyMuseumCurator, janitor, father, busDriver, students, regionalMuseumCurator
