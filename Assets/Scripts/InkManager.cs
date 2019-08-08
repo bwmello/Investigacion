@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Ink.Runtime;
+using System.Linq;
 
 public class InkManager : MonoBehaviour
 {
@@ -70,22 +71,14 @@ public class InkManager : MonoBehaviour
         // Display all the choices, if there are any!
         if (story.currentChoices.Count > 0)
         {
-            for (int i = 0; i < story.currentChoices.Count; i++)
-            {
-                Choice choice = story.currentChoices[i];
-                //Button button = CreateChoiceView(choice.text.Trim());
-                GameObject wordBubble = CreateChoiceView(choice.text.Trim());
-                // Tell the button what to do when we press it
-                //button.onClick.AddListener(delegate {  // TODO
-                //    OnClickChoiceButton(choice);
-                //});
-            }
+            CreateChoiceView(story.currentChoices);
         }
         // If we've read all the content and there's no choices, the story is finished!
         else
         {
             //Button choice = CreateChoiceView("End of story.\nRestart?");
-            GameObject choice = CreateChoiceView("End of story.\nRestart?");
+            //Choice endOfStoryChoice = 
+            CreateChoiceView("End of story.\nRestart?");
             //choice.onClick.AddListener(delegate {  // TODO
             //    StartStory();
             //});
@@ -107,28 +100,55 @@ public class InkManager : MonoBehaviour
         storyText.transform.SetParent(canvas.transform, false);
     }
 
-    // Creates a button showing the choice text
-    //Button CreateChoiceView(string text)
-    GameObject CreateChoiceView(string text)
+    // Creates draggable choice WordBubbles from the choice text
+    void CreateChoiceView(List<Choice> choicesList)
     {
-        // Creates the button from a prefab
-        //Button choice = Instantiate(buttonPrefab) as Button;
-        GameObject choice = Instantiate(wordBubblePrefab);
-        choice.transform.SetParent(canvas.transform, false);
+        List<String> allChoiceWords = new List<String>();
+        foreach (var choice in choicesList)
+        {
+            var choiceFormattedText = choice.text.Trim().ToLower();
+            string[] choiceSplitIntoWords = choiceFormattedText.Split(' ');
+            allChoiceWords.AddRange(allChoiceWords.Union(choiceSplitIntoWords).ToList());
+        }
+        foreach (var word in allChoiceWords)
+        {
+            GameObject wordBubble = Instantiate(wordBubblePrefab);
+            wordBubble.transform.SetParent(canvas.transform, false);
 
-        // Gets the text from the button prefab
-        Text choiceText = choice.GetComponentInChildren<Text>();
-        choiceText.text = text;
+            // Gets the text from the button prefab
+            Text wordBubbleText = wordBubble.GetComponentInChildren<Text>();
+            wordBubbleText.text = word;
 
-        // Make the button expand to fit the text
-        HorizontalLayoutGroup layoutGroup = choice.GetComponent<HorizontalLayoutGroup>();
-        layoutGroup.childForceExpandHeight = false;
-
-        return choice;
+            // Make the button expand to fit the text
+            HorizontalLayoutGroup layoutGroup = wordBubble.GetComponent<HorizontalLayoutGroup>();
+            layoutGroup.childForceExpandHeight = false;
+        }
     }
 
-    // Destroys all the children of this gameobject (all the UI)
-    void RemoveChildren()
+    // Creates draggable choice WordBubbles from the choice text
+    void CreateChoiceView(String choiceText)
+    {
+        List<String> allChoiceWords = new List<String>();
+        var choiceFormattedText = choiceText.Trim().ToLower();
+        string[] choiceSplitIntoWords = choiceFormattedText.Split(' ');
+        allChoiceWords.AddRange(choiceSplitIntoWords);
+        foreach (var word in allChoiceWords)
+        {
+            GameObject wordBubble = Instantiate(wordBubblePrefab);
+            wordBubble.transform.SetParent(canvas.transform, false);
+
+            // Gets the text from the button prefab
+            Text wordBubbleText = wordBubble.GetComponentInChildren<Text>();
+            wordBubbleText.text = word;
+
+            // Make the button expand to fit the text
+            HorizontalLayoutGroup layoutGroup = wordBubble.GetComponent<HorizontalLayoutGroup>();
+            layoutGroup.childForceExpandHeight = false;
+        }
+    }
+
+        // Destroys all the children of this gameobject (all the UI)
+        void RemoveChildren()
     {
         int childCount = canvas.transform.childCount;
         for (int i = childCount - 1; i >= 0; --i)
