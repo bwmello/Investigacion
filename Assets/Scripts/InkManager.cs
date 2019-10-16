@@ -25,6 +25,8 @@ public class InkManager : MonoBehaviour
     //private Button buttonPrefab;
     [SerializeField]
     private GameObject wordBubblePrefab;
+	[SerializeField]
+	//private GameObject playerInputPrefab;
     CharacterManager cm;
     GameManager gm;
     [SerializeField]
@@ -103,7 +105,7 @@ public class InkManager : MonoBehaviour
     // Creates draggable choice WordBubbles from the choice text
     void CreateChoiceView(List<Choice> choicesList)
     {
-        List<String> allChoiceWords = new List<String>();
+		List<String> allChoiceWords = new List<String>();
         foreach (var choice in choicesList)
         {
             var choiceFormattedText = choice.text.Trim().ToLower();
@@ -147,8 +149,8 @@ public class InkManager : MonoBehaviour
         }
     }
 
-        // Destroys all the children of this gameobject (all the UI)
-        void RemoveChildren()
+    // Destroys all the children of this gameobject (all the UI)
+    void RemoveChildren()
     {
         int childCount = canvas.transform.childCount;
         for (int i = childCount - 1; i >= 0; --i)

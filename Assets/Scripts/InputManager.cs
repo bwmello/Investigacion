@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
-using System.Collections;
+//using System.Collections;
+using System.Collections.Generic;
 public class InputManager : MonoBehaviour
 {
-    private bool draggingItem = false;
+    private bool draggingItem;
     private GameObject draggedObject;
     private Vector2 touchOffset;
 
@@ -65,7 +66,8 @@ public class InputManager : MonoBehaviour
 
     void DropItem()
     {
-        draggingItem = false;
+		Debug.Log("!!!!Item dropped");
+		draggingItem = false;
         draggedObject.transform.localScale = new Vector3(1f, 1f, 1f);
     }
 }
