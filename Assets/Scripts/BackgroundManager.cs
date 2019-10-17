@@ -10,8 +10,7 @@ public class BackgroundManager : MonoBehaviour
     public Sprite guanajuatoImage;
     public Sprite mummyImage;
 
-    // Use this for initialization
-    void Awake()
+    void Start()
     {
         //myImageComponent = GetComponent<Image>();  // Causes undefined/null issue
         myImageComponent.preserveAspect = true;

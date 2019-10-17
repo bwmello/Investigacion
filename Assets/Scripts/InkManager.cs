@@ -21,8 +21,6 @@ public class InkManager : MonoBehaviour
     // UI Prefabs
     [SerializeField]
     private Text textPrefab;
-    //[SerializeField]
-    //private Button buttonPrefab;
     [SerializeField]
     private GameObject wordBubblePrefab;
 	[SerializeField]
@@ -114,8 +112,7 @@ public class InkManager : MonoBehaviour
         }
         foreach (var word in allChoiceWords)
         {
-            GameObject wordBubble = Instantiate(wordBubblePrefab);
-            wordBubble.transform.SetParent(canvas.transform, false);
+            GameObject wordBubble = Instantiate(wordBubblePrefab, new Vector3(0, 0, 0), Quaternion.identity, canvas.transform);
 
             // Gets the text from the button prefab
             Text wordBubbleText = wordBubble.GetComponentInChildren<Text>();
@@ -136,10 +133,9 @@ public class InkManager : MonoBehaviour
         allChoiceWords.AddRange(choiceSplitIntoWords);
         foreach (var word in allChoiceWords)
         {
-            GameObject wordBubble = Instantiate(wordBubblePrefab);
-            wordBubble.transform.SetParent(canvas.transform, false);
+            GameObject wordBubble = Instantiate(wordBubblePrefab, new Vector3(0, 0, 0), Quaternion.identity, canvas.transform);
 
-            // Gets the text from the button prefab
+            // Gets then sets the text from the button prefab
             Text wordBubbleText = wordBubble.GetComponentInChildren<Text>();
             wordBubbleText.text = word;
 
@@ -152,10 +148,14 @@ public class InkManager : MonoBehaviour
     // Destroys all the children of this gameobject (all the UI)
     void RemoveChildren()
     {
+        // TODO try Destroy(GameObject.FindGameObjectsWithTag("InkChild")); instead
         int childCount = canvas.transform.childCount;
         for (int i = childCount - 1; i >= 0; --i)
         {
-            Destroy(canvas.transform.GetChild(i).gameObject);
+            if (canvas.transform.GetChild(i).gameObject.tag == "InkChild")
+            {
+                Destroy(canvas.transform.GetChild(i).gameObject);
+            }
         }
     }
 

@@ -4,20 +4,36 @@ using UnityEngine;
 
 public class WordBubble : MonoBehaviour
 {
-    //private float startPosX;
-    //private float startPosY;
+    private BoxCollider2D myCollider;
+    private Vector2 currentPosition;
+    private Vector2 originalPosition;
     private bool isBeingHeld;
-    private Vector2 startingPosition;
-    //private bool overPlayerInput = false;
-    //private List<Transform> touchingWordBubbles;
+    //[SerializeField]
     //private AudioSource audSource;  // TODO implement as maraca sound
+    private GameObject playerInputBar;  // Only used to reference its position and determine if event should be fired
+
+    private void Start()
+    {
+        myCollider = GetComponent<BoxCollider2D>();
+        originalPosition = transform.position;
+        playerInputBar = GameObject.FindWithTag("PlayerInputBar");  // TODO Is it more efficient to have InkManager set this for WordBubble after instantiating it?
+        //audSource = gameObject.GetComponent<AudioSource>();  // TODO implement as maraca sound
+        StartCoroutine(WaitUntilEndOfStartFrame());
+    }
+
+    IEnumerator WaitUntilEndOfStartFrame()
+    {
+        yield return new WaitForEndOfFrame();
+        RectTransform myRectTransform = GetComponent<RectTransform>();  // LayoutGroup doesn't set width/height until 1 frame after Start()
+        myCollider.size = new Vector2(myRectTransform.rect.width, myRectTransform.rect.height);
+    }
 
     private void Update()
     {
         if (isBeingHeld == true)
         {
             Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);  // From screen space to world space
-            this.gameObject.transform.position = mousePosition - startingPosition;
+            this.gameObject.transform.position = mousePosition - currentPosition;
         }
     }
 
@@ -27,7 +43,7 @@ public class WordBubble : MonoBehaviour
         {
             Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 myPosition = this.transform.position;
-            startingPosition = mousePosition - myPosition;
+            currentPosition = mousePosition - myPosition;
             isBeingHeld = true;
         }
     }
@@ -35,62 +51,9 @@ public class WordBubble : MonoBehaviour
     private void OnMouseUp()
     {
         isBeingHeld = false;
+        if (myCollider.IsTouching(playerInputBar.GetComponent<BoxCollider2D>()))
+        {
+            transform.SetParent(playerInputBar.transform);
+        }
     }
-
-    //private void Awake()
-    //   {
-    //	startingPosition = transform.position;
-    //       touchingWordBubbles = new List<Transform>();
-    //	//audSource = gameObject.GetComponent<AudioSource>();  // TODO implement as maraca sound
-    //}
-
-    //   public void PickUp()
-    //{
-    //	transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
-    //	gameObject.GetComponent<SpriteRenderer>().sortingOrder = 1;
-    //}
-
-    //public void Drop()
-    //{
-    //       Debug.Log("!!!!Item dropped!!!! from WordBubble script");
-    //       transform.localScale = new Vector3(1, 1, 1);
-    //	gameObject.GetComponent<SpriteRenderer>().sortingOrder = 0;
-    //}
-
-    //void OnTriggerEnter2D(Collider2D other)
-    //{
-    //	Debug.Log("!!!!OnTriggerEnter2D() called, other.tag: " + other.tag);
-    //	if (other.tag == "PlayerInput")
-    //	{
-    //		overPlayerInput = true;
-    //	} // Switch statement? Does each overlapping object first its own OnTriggerEnter2D()?
-    //	if (other.tag == "WordBubble" && !touchingWordBubbles.Contains(other.transform))
-    //	{
-    //		touchingWordBubbles.Add(other.transform);
-    //	}
-    //}
-
-    //   void OnTriggerEnter(Collider other)
-    //   {
-    //       Debug.Log("!!!!OnTriggerEnter() called, other.tag: " + other.tag);
-    //   }
-
-    //   void OnCollisionEnter2D(Collision2D other)
-    //   {
-    //       Debug.Log("!!!!OnCollisionEnter2D() called");
-    //       return;
-    //   }
-
-    //   void OnTriggerExit2D(Collider2D other)
-    //{
-    //	Debug.Log("!!!!OnTriggerExit2D() called, other.tag: " + other.tag);
-    //	if (other.tag == "PlayerInput")
-    //	{
-    //		overPlayerInput = false;
-    //	}
-    //	if (touchingWordBubbles.Contains(other.transform))
-    //	{
-    //		touchingWordBubbles.Remove(other.transform);
-    //	}
-    //}
 }
