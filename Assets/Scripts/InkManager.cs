@@ -64,10 +64,10 @@ public class InkManager : MonoBehaviour
         // Read all the content until we can't continue any more
         while (story.canContinue)
         {
-            EvaluateTags(story.currentTags);
             Text storyText = Instantiate(topTextPrefab) as Text;
             storyText.text = story.Continue();  // Continue gets the next line of the story
             storyText.transform.SetParent(canvas.transform, false);
+            EvaluateTags(story.currentTags);  // Must come after story.Continue() or correct tags not evaluated
         }
 
         // Display all the choices, if there are any!

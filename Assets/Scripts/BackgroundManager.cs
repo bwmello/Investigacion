@@ -12,7 +12,6 @@ public class BackgroundManager : MonoBehaviour
 
     void Start()
     {
-        //myImageComponent = GetComponent<Image>();  // Causes undefined/null issue
         myImageComponent.preserveAspect = true;
         myImageComponent.sprite = guanajuatoImage;
     }
