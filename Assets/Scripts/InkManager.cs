@@ -20,21 +20,23 @@ public class InkManager : MonoBehaviour
 
     // UI Prefabs
     [SerializeField]
-    private Text textPrefab;
+    private Text topTextPrefab;
     [SerializeField]
     private GameObject wordBubblePrefab;
-	[SerializeField]
-	//private GameObject playerInputPrefab;
     CharacterManager cm;
     GameManager gm;
     [SerializeField]
     BackgroundManager bm;
+    //private Text displayText;  // Can't set displayText.text without making its type Text, and can't GameObject.FindWithTag("DisplayText") without type GameObject
+    private GameObject playerInputBar;
 
     void Start()
     {
         cm = GetComponent<CharacterManager>();
         gm = GetComponent<GameManager>();
         bm = GetComponent<BackgroundManager>();
+        playerInputBar = GameObject.FindWithTag("PlayerInputBar");
+        EventManager.addedToPlayerInputBar.AddListener(EvaluatePlayerInputBar);
         StartStory();
     }
 
@@ -50,8 +52,11 @@ public class InkManager : MonoBehaviour
     // Continues over all the lines of text, then displays all the choices. If there are no choices, the story is finished!
     void RefreshView()
     {
-        // Remove all the UI on screen
-        RemoveChildren();
+        // Remove all Choice related GameObjects
+        foreach (GameObject gameObjectToBeRemoved in GameObject.FindGameObjectsWithTag("InkChild"))
+        {
+            Destroy(gameObjectToBeRemoved);
+        }
 
         // Remove all characters on screen
         cm.RemoveCharacters();
@@ -59,13 +64,10 @@ public class InkManager : MonoBehaviour
         // Read all the content until we can't continue any more
         while (story.canContinue)
         {
-            // Continue gets the next line of the story
-            string text = story.Continue();
             EvaluateTags(story.currentTags);
-            // This removes any white space from the text.
-            text = text.Trim();
-            // Display the text on screen!
-            CreateContentView(text);
+            Text storyText = Instantiate(topTextPrefab) as Text;
+            storyText.text = story.Continue();  // Continue gets the next line of the story
+            storyText.transform.SetParent(canvas.transform, false);
         }
 
         // Display all the choices, if there are any!
@@ -85,29 +87,34 @@ public class InkManager : MonoBehaviour
         }
     }
 
-    // When we click the choice button, tell the story to choose that choice!
-    void OnClickChoiceButton(Choice choice)
+    // If text in PlayerInputBar matches a choice, tell the story to choose that choice
+    void EvaluatePlayerInputBar()
     {
-        story.ChooseChoiceIndex(choice.index);
-        RefreshView();
-    }
-
-    // Creates a button showing the choice text
-    void CreateContentView(string text)
-    {
-        Text storyText = Instantiate(textPrefab) as Text;
-        storyText.text = text;
-        storyText.transform.SetParent(canvas.transform, false);
+        List<String> playerInputBarWords = new List<String>();
+        foreach (Text word in playerInputBar.GetComponentsInChildren<Text>())
+        {
+            playerInputBarWords.Add(word.text);
+        }
+        string playerInputBarString = String.Join(" ", playerInputBarWords);
+        foreach (Choice choice in story.currentChoices)
+        {
+            if (choice.text == playerInputBarString)
+            {
+                story.ChooseChoiceIndex(choice.index);
+                RefreshView();
+                break;
+            }
+        }
     }
 
     // Creates draggable choice WordBubbles from the choice text
     void CreateChoiceView(List<Choice> choicesList)
     {
 		List<String> allChoiceWords = new List<String>();
-        foreach (var choice in choicesList)
+        foreach (Choice choice in choicesList)
         {
-            var choiceFormattedText = choice.text.Trim().ToLower();
-            string[] choiceSplitIntoWords = choiceFormattedText.Split(' ');
+            //var choiceFormattedText = choice.text.Trim().ToLower();
+            string[] choiceSplitIntoWords = choice.text.Split(' ');
             allChoiceWords.AddRange(allChoiceWords.Union(choiceSplitIntoWords).ToList());
         }
         foreach (var word in allChoiceWords)
@@ -128,8 +135,8 @@ public class InkManager : MonoBehaviour
     void CreateChoiceView(String choiceText)
     {
         List<String> allChoiceWords = new List<String>();
-        var choiceFormattedText = choiceText.Trim().ToLower();
-        string[] choiceSplitIntoWords = choiceFormattedText.Split(' ');
+        //var choiceFormattedText = choiceText.Trim().ToLower();
+        string[] choiceSplitIntoWords = choiceText.Split(' ');
         allChoiceWords.AddRange(choiceSplitIntoWords);
         foreach (var word in allChoiceWords)
         {
@@ -142,20 +149,6 @@ public class InkManager : MonoBehaviour
             // Make the button expand to fit the text
             HorizontalLayoutGroup layoutGroup = wordBubble.GetComponent<HorizontalLayoutGroup>();
             layoutGroup.childForceExpandHeight = false;
-        }
-    }
-
-    // Destroys all the children of this gameobject (all the UI)
-    void RemoveChildren()
-    {
-        // TODO try Destroy(GameObject.FindGameObjectsWithTag("InkChild")); instead
-        int childCount = canvas.transform.childCount;
-        for (int i = childCount - 1; i >= 0; --i)
-        {
-            if (canvas.transform.GetChild(i).gameObject.tag == "InkChild")
-            {
-                Destroy(canvas.transform.GetChild(i).gameObject);
-            }
         }
     }
 

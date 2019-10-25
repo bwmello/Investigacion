@@ -1,9 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WordBubble : MonoBehaviour
 {
+    //[SerializeField]
+    //private Text textPrefab;
+
     private BoxCollider2D myCollider;
     private Vector2 currentPosition;
     private Vector2 originalPosition;
@@ -11,6 +15,8 @@ public class WordBubble : MonoBehaviour
     //[SerializeField]
     //private AudioSource audSource;  // TODO implement as maraca sound
     private GameObject playerInputBar;  // Only used to reference its position and determine if event should be fired
+    public delegate void WordBubbleAction();
+    public static event WordBubbleAction AddedToPlayerInputBar;
 
     private void Start()
     {
@@ -54,6 +60,7 @@ public class WordBubble : MonoBehaviour
         if (myCollider.IsTouching(playerInputBar.GetComponent<BoxCollider2D>()))
         {
             transform.SetParent(playerInputBar.transform);
+            EventManager.addedToPlayerInputBar.Invoke();
         }
     }
 }

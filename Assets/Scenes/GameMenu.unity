@@ -276,10 +276,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inkJSONAsset: {fileID: 4900000, guid: 07c11578e1d034a0284e559f6a6e4cc3, type: 3}
   canvas: {fileID: 590605805}
-  textPrefab: {fileID: 11456674, guid: 1aab6ef84d87c416f8f0b3e1ef3d77d2, type: 3}
+  topTextPrefab: {fileID: 1825432400814061045, guid: 3ac932a5a03914d9daeed76acac9ee49,
+    type: 3}
   wordBubblePrefab: {fileID: 6242079078792163190, guid: 203c2a6cf11f84c1d84a05e79fda8287,
     type: 3}
-  cm: {fileID: 0}
   bm: {fileID: 0}
 --- !u!4 &225502723
 Transform:
@@ -323,6 +323,7 @@ GameObject:
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
   - component: {fileID: 519420032}
+  - component: {fileID: 519420030}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -338,6 +339,18 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_Enabled: 1
+--- !u!114 &519420030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 866f2040a77ff4f54b5eebc3c0b410c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -420,7 +433,7 @@ GameObject:
   - component: {fileID: 590605805}
   - component: {fileID: 590605804}
   - component: {fileID: 590605803}
-  - component: {fileID: 590605808}
+  - component: {fileID: 590605807}
   m_Layer: 5
   m_Name: UI Canvas
   m_TagString: Untagged
@@ -508,7 +521,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &590605808
+--- !u!114 &590605807
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -517,12 +530,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 590605802}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 151b318fb060a4e87b489e4003e0a04f, type: 3}
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  draggingItem: 0
-  draggedObject: {fileID: 0}
-  touchOffset: {x: 0, y: 0}
+  m_HorizontalFit: 0
+  m_VerticalFit: 0
 --- !u!1 &714965892
 GameObject:
   m_ObjectHideFlags: 0
@@ -635,7 +647,6 @@ GameObject:
   - component: {fileID: 739922003}
   - component: {fileID: 739922002}
   - component: {fileID: 739922006}
-  - component: {fileID: 739922005}
   m_Layer: 30
   m_Name: PlayerInputBar
   m_TagString: PlayerInputBar
@@ -723,18 +734,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 739922000}
   m_CullTransparentMesh: 0
---- !u!114 &739922005
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 739922000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9d5587fbd97043238ffbf821d009b71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!61 &739922006
 BoxCollider2D:
   m_ObjectHideFlags: 0
