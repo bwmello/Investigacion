@@ -16,8 +16,6 @@ public class InkManager : MonoBehaviour
     [SerializeField]
     private Canvas canvas;
 
-    public enum TagKeyWords { CHARACTER, LOCATION };
-
     // UI Prefabs
     [SerializeField]
     private Text topTextPrefab;
@@ -29,6 +27,9 @@ public class InkManager : MonoBehaviour
     BackgroundManager bm;
     //private Text displayText;  // Can't set displayText.text without making its type Text, and can't GameObject.FindWithTag("DisplayText") without type GameObject
     private GameObject playerInputBar;
+
+    readonly System.Random random = new System.Random();
+    public enum TagKeyWords { CHARACTER, LOCATION };
 
     void Start()
     {
@@ -110,45 +111,55 @@ public class InkManager : MonoBehaviour
     // Creates draggable choice WordBubbles from the choice text
     void CreateChoiceView(List<Choice> choicesList)
     {
-		List<String> allChoiceWords = new List<String>();
+        List<String> allChoiceWords = new List<String>();
         foreach (Choice choice in choicesList)
         {
-            //var choiceFormattedText = choice.text.Trim().ToLower();
             string[] choiceSplitIntoWords = choice.text.Split(' ');
-            allChoiceWords.AddRange(allChoiceWords.Union(choiceSplitIntoWords).ToList());
+            allChoiceWords = allChoiceWords.Union(choiceSplitIntoWords).ToList();
         }
-        foreach (var word in allChoiceWords)
+        ShuffleWordList(allChoiceWords);
+        RectTransform canvasRectTransform = canvas.GetComponent<RectTransform>();
+        int sectionWidth = (int)canvasRectTransform.rect.width / allChoiceWords.Count;
+        for (int i = 0; i < allChoiceWords.Count; i++)
         {
+            // Alternative: UnityEngine.Random.insideUnitCircle * 5 with collision detection/avoidance
+            int randomX = random.Next(i * sectionWidth + 20, (i + 1) * sectionWidth - 20) - (int)canvasRectTransform.rect.width / 2;
+            int randomY = random.Next(13, 25) - (int)canvasRectTransform.rect.height / 2;
+            Vector3 randomPosition = new Vector3(randomX, randomY, 500);
             GameObject wordBubble = Instantiate(wordBubblePrefab, new Vector3(0, 0, 0), Quaternion.identity, canvas.transform);
-
-            // Gets the text from the button prefab
-            Text wordBubbleText = wordBubble.GetComponentInChildren<Text>();
-            wordBubbleText.text = word;
-
-            // Make the button expand to fit the text
-            HorizontalLayoutGroup layoutGroup = wordBubble.GetComponent<HorizontalLayoutGroup>();
-            layoutGroup.childForceExpandHeight = false;
+            wordBubble.GetComponentInChildren<Text>().text = allChoiceWords[i];
+            wordBubble.transform.localPosition = randomPosition;
         }
     }
 
     // Creates draggable choice WordBubbles from the choice text
+    // TODO get rid of this function and just make it a Choice instead of a String
     void CreateChoiceView(String choiceText)
     {
         List<String> allChoiceWords = new List<String>();
-        //var choiceFormattedText = choiceText.Trim().ToLower();
         string[] choiceSplitIntoWords = choiceText.Split(' ');
         allChoiceWords.AddRange(choiceSplitIntoWords);
         foreach (var word in allChoiceWords)
         {
             GameObject wordBubble = Instantiate(wordBubblePrefab, new Vector3(0, 0, 0), Quaternion.identity, canvas.transform);
+            wordBubble.GetComponentInChildren<Text>().text = word;
+        }
+    }
 
-            // Gets then sets the text from the button prefab
-            Text wordBubbleText = wordBubble.GetComponentInChildren<Text>();
-            wordBubbleText.text = word;
+    // Adapted from http://www.vcskicks.com/code-snippet/shuffle-array.php
+    void ShuffleWordList(List<string> wordList)
+    {
+        if (wordList.Count > 1)
+        {
+            for (int i = wordList.Count-1; i >= 0; i--)
+            {
+                string tmp = wordList[i];
+                int randomIndex = random.Next(i + 1);
 
-            // Make the button expand to fit the text
-            HorizontalLayoutGroup layoutGroup = wordBubble.GetComponent<HorizontalLayoutGroup>();
-            layoutGroup.childForceExpandHeight = false;
+                // Swap elements
+                wordList[i] = wordList[randomIndex];
+                wordList[randomIndex] = tmp;
+            }
         }
     }
 

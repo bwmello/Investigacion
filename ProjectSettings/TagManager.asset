@@ -6,7 +6,6 @@ TagManager:
   tags:
   - InkChild
   - PlayerInputBar
-  - DisplayText
   layers:
   - Default
   - TransparentFX

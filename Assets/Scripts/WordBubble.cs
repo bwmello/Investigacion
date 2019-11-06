@@ -10,19 +10,17 @@ public class WordBubble : MonoBehaviour
 
     private BoxCollider2D myCollider;
     private Vector2 currentPosition;
-    private Vector2 originalPosition;
     private bool isBeingHeld;
     //[SerializeField]
     //private AudioSource audSource;  // TODO implement as maraca sound
-    private GameObject playerInputBar;  // Only used to reference its position and determine if event should be fired
+    private GameObject playerInputBar;
     public delegate void WordBubbleAction();
     public static event WordBubbleAction AddedToPlayerInputBar;
 
     private void Start()
     {
         myCollider = GetComponent<BoxCollider2D>();
-        originalPosition = transform.position;
-        playerInputBar = GameObject.FindWithTag("PlayerInputBar");  // TODO Is it more efficient to have InkManager set this for WordBubble after instantiating it?
+        playerInputBar = GameObject.FindWithTag("PlayerInputBar");
         //audSource = gameObject.GetComponent<AudioSource>();  // TODO implement as maraca sound
         StartCoroutine(WaitUntilEndOfStartFrame());
     }
@@ -39,7 +37,7 @@ public class WordBubble : MonoBehaviour
         if (isBeingHeld == true)
         {
             Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);  // From screen space to world space
-            this.gameObject.transform.position = mousePosition - currentPosition;
+            transform.position = mousePosition - currentPosition;
         }
     }
 
@@ -47,8 +45,9 @@ public class WordBubble : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
+            transform.SetParent(playerInputBar.transform.parent);  // Make parent the UI Canvas so WordBubble can be dragged outside of playerInputBar
             Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 myPosition = this.transform.position;
+            Vector2 myPosition = transform.position;
             currentPosition = mousePosition - myPosition;
             isBeingHeld = true;
         }
@@ -57,10 +56,29 @@ public class WordBubble : MonoBehaviour
     private void OnMouseUp()
     {
         isBeingHeld = false;
-        if (myCollider.IsTouching(playerInputBar.GetComponent<BoxCollider2D>()))
-        {
-            transform.SetParent(playerInputBar.transform);
+        if (myCollider.IsTouching(playerInputBar.GetComponent<BoxCollider2D>())) {
+            if (playerInputBar.transform.childCount > 0)
+            {
+                for (int i = playerInputBar.transform.childCount-1; i >= 0; i--)
+                {
+                    if (Camera.main.WorldToScreenPoint(transform.position).x >= Camera.main.WorldToScreenPoint(playerInputBar.transform.GetChild(i).position).x)
+                    {
+                        transform.SetParent(playerInputBar.transform);
+                        transform.SetSiblingIndex(i+1);
+                        break;
+                    }
+                    else if (i == 0)
+                    {
+                        transform.SetParent(playerInputBar.transform);
+                        transform.SetSiblingIndex(0);
+                    }
+                }
+            }
+            else
+            {
+                transform.SetParent(playerInputBar.transform);
+            }
             EventManager.addedToPlayerInputBar.Invoke();
-        }
+        }  // TODO else { don't allow WordBubble to be placed outside of area nor over/under another WordBubble }
     }
 }
