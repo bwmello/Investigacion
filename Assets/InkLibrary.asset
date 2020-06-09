@@ -26,15 +26,4 @@ MonoBehaviour:
     jsonAssetPath: {fileID: 0}
     jsonAsset: {fileID: 4900000, guid: 97eb5af01899c47df8e06b9b7a46fec1, type: 3}
   pendingCompilationStack: []
-  compilationStack:
-  - state: 1
-    inkFile:
-      compileAutomatically: 0
-      inkAsset: {fileID: 102900000, guid: d495aa4e16d7649f78d2c9577ec2625b, type: 3}
-      jsonAssetPath: {fileID: 0}
-      jsonAsset: {fileID: 4900000, guid: 07c11578e1d034a0284e559f6a6e4cc3, type: 3}
-    inkAbsoluteFilePath: /Users/brent.mello/git/Investigacion/Assets/Resources/gameStory.ink
-    jsonAbsoluteFilePath: /Users/brent.mello/git/Investigacion/Assets/Resources/gameStory.json
-    output: []
-    errorOutput: []
-    timeTaken: 0
+  compilationStack: []
